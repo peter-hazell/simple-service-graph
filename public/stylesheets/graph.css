@@ -1,0 +1,9 @@
+#cy {
+    border-radius: 4px;
+    border: 1px solid #CCC;
+    box-sizing: border-box;
+    margin: 0 auto;
+    width: auto;
+    height: 800px;
+    display: block;
+}

@@ -1,0 +1,27 @@
+@import helper._
+
+@(serviceNameForm: Form[String], graphElementsJson: Option[String])(implicit request: RequestHeader)
+
+@main("Simple Service Graph") {
+    <div class="pb-2 mt-4 mb-2 border-bottom">
+        <h1>Simple Service Graph</h1>
+    </div>
+
+    @form(action = routes.SsgController.submit()) {
+        @CSRF.formField
+
+        <div class="form-group">
+            <label for="service-name-input">Service name:</label>
+            <input class="form-control" type="text" id="service-name-input" name="serviceName">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Generate service graph</button>
+    }
+
+    @for(g <- graphElementsJson) {
+        <p></p>
+        <div id="graphJson" hidden>@Html(g)</div>
+        <div id="cy"></div>
+        <script>buildGraph()</script>
+    }
+}

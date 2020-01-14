@@ -1,0 +1,21 @@
+@(title: String)(content: Html)
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>@title</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.at(file = "lib/bootstrap/css/bootstrap.css")">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.at(file = "/stylesheets/graph.css")">
+        <script type="text/javascript" src="@routes.Assets.at("lib/jquery/jquery.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("lib/bootstrap/js/bootstrap.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at(file = "/javascripts/graph.js")"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.9.4/cytoscape.min.js"></script>
+    </head>
+
+    <body>
+        <div class="container-fluid">
+        @content
+        </div>
+    </body>
+</html>

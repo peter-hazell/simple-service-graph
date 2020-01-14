@@ -1,0 +1,4 @@
+GET         /simple-service-graph                     controllers.SsgController.show()
+POST        /simple-service-graph                     controllers.SsgController.submit()
+
+GET         /simple-service-graph/assets/*file        controllers.Assets.at(path="/public", file)
