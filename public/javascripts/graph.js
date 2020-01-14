@@ -23,14 +23,16 @@ function buildGraph() {
                     'width': 3,
                     'line-color': '#ccc',
                     'target-arrow-color': '#ccc',
-                    'target-arrow-shape': 'triangle'
+                    'target-arrow-shape': 'triangle',
+                    'curve-style': 'bezier'
                 }
             }
         ],
 
         layout: {
-            name: 'random',
-            rows: 1
+            name: 'cose-bilkent',
+            nodeDimensionsIncludeLabels: true,
+            idealEdgeLength: 100
         }
 
     });
