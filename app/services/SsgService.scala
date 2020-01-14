@@ -4,7 +4,7 @@ import connectors.GitHubConnector
 import javax.inject.Inject
 import models._
 
-import collection.JavaConverters._
+import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
 class SsgService @Inject()(gitHubConnector: GitHubConnector)(implicit ec: ExecutionContext) {
@@ -24,10 +24,8 @@ class SsgService @Inject()(gitHubConnector: GitHubConnector)(implicit ec: Execut
   private def getValidServices(serviceName: String): Future[List[String]] =
     getConfigString(serviceName).flatMap {
       case Some(s) =>
-        val c: List[String] = getServicesNamesFromConf(s)
-
-        val realServices = Future
-          .traverse(c)(maybeService =>
+        Future
+          .traverse(getServicesNamesFromConf(s))(maybeService =>
             getConfigString(maybeService) map {
               case Some(_) => Some(maybeService)
               case None    => None
@@ -35,44 +33,36 @@ class SsgService @Inject()(gitHubConnector: GitHubConnector)(implicit ec: Execut
           .map(_.collect {
             case Some(realService) => realService
           })
-          .map { l =>
-            println(s"SERVICES USED BY $serviceName: $l")
-            l
-          }
 
-        realServices
       case None => Future.successful(List.empty[String])
     }
 
   def generateServiceGraph(serviceName: String): Future[GraphElements] = {
-
     def updateGraph(services: List[String], graphElements: Future[GraphElements]): Future[GraphElements] =
-      services.foldLeft(graphElements) { (g, s) =>
-        graphElements.flatMap { g =>
-          if (!g.nodes.exists(_.data.id == s)) {
-            getValidServices(s).flatMap { validServices =>
-              val graph = validServices.foldLeft(graphElements) { (g, s) =>
+      services.foldLeft(graphElements) { (g, service) =>
+        g.flatMap { g =>
+          if (g.nodes.exists(_.data.id == service)) {
+            Future.successful(g)
+          } else {
+            getValidServices(service).flatMap { validServices =>
+              val graph = validServices.foldLeft(Future.successful(g.addNode(GraphNode(data = GraphNodeData(service))))) { (g, s) =>
                 g.map { g =>
-                  if (!g.nodes.exists(_.data.id == s)) {
-                    g.addNode(GraphNode(data = GraphNodeData(id = s)))
-                      .addEdge(GraphEdge(data = GraphEdgeData(id = s"$serviceName-$s", source = serviceName, target = s)))
+                  if (!g.nodes.exists(_.data.id == service)) {
+                    g.addNode(GraphNode(data = GraphNodeData(id = service)))
+                      .addEdge(GraphEdge(data = GraphEdgeData(id = s"$service->$s", source = service, target = s)))
                   } else {
-                    g.addEdge(GraphEdge(data = GraphEdgeData(id = s"$serviceName-$s", source = serviceName, target = s)))
+                    g.addEdge(GraphEdge(data = GraphEdgeData(id = s"$service->$s", source = service, target = s)))
                   }
                 }
               }
 
               updateGraph(validServices, graph)
             }
-          } else {
-            Future.successful(g)
           }
         }
-
       }
 
     updateGraph(List(serviceName), Future.successful(GraphElements.empty))
-
   }
 
 }
