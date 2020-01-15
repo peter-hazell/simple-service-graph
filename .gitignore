@@ -29,4 +29,5 @@ test-result
 tmp
 .idea_modules
 bin
+local.conf
 
