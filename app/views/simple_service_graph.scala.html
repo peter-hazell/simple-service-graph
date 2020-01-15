@@ -1,6 +1,6 @@
 @import helper._
 
-@(serviceNameForm: Form[String], graphElementsJson: Option[String])(implicit request: RequestHeader, messages: MessagesProvider)
+@(serviceNameForm: Form[String], graphElementsJson: Option[String], serviceName: Option[String])(implicit request: RequestHeader, messages: MessagesProvider)
 
 @main("Simple Service Graph") {
     <div class="pb-2 mt-4 mb-2 border-bottom">
@@ -21,6 +21,7 @@
 
     @for(g <- graphElementsJson) {
         <p></p>
+        <div id="serviceName" hidden>@Html(serviceName.getOrElse(""))</div>
         <div id="graphJson" hidden>@Html(g)</div>
         <div id="cy"></div>
         <script>buildGraph()</script>

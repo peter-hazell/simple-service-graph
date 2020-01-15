@@ -16,7 +16,13 @@ function buildGraph() {
                     'label': 'data(id)'
                 }
             },
-
+            {
+                selector: '.primary-node',
+                style: {
+                    'background-color': '#5cb85c',
+                    'label': 'data(id)'
+                }
+            },
             {
                 selector: 'edge',
                 style: {
@@ -46,6 +52,8 @@ function buildGraph() {
             window.location.href = this.data('href');
         }
     });
+    
+    cy.$('#' + document.getElementById('serviceName').innerHTML).classes('primary-node');
 
 }
 

@@ -16,18 +16,19 @@ class SsgController @Inject()(ssgService: SsgService, mcc: MessagesControllerCom
 
   def show(): Action[AnyContent] = Action { implicit request: MessagesRequest[AnyContent] =>
     Ok(
-      views.html.simple_service_graph(serviceNameForm, None)
+      views.html.simple_service_graph(serviceNameForm, None, None)
     )
   }
 
   def submit(): Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
     serviceNameForm.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(views.html.simple_service_graph(formWithErrors, None))), { serviceName =>
+      formWithErrors => Future.successful(BadRequest(views.html.simple_service_graph(formWithErrors, None, None))), { serviceName =>
         ssgService.generateServiceGraph(serviceName).map { graph =>
           Ok(
             views.html.simple_service_graph(
               ServiceNameForm.serviceNameForm,
-              Some(Json.toJson(graph).toString())
+              Some(Json.toJson(graph).toString()),
+              Some(serviceName)
             ))
         }
       }
