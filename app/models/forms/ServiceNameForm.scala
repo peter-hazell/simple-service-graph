@@ -5,6 +5,6 @@ import play.api.data.Forms._
 
 object ServiceNameForm {
 
-  val serviceNameForm = Form(single("serviceName" -> text))
+  val serviceNameForm = Form(single("serviceName" -> nonEmptyText))
 
 }

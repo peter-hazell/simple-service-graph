@@ -4,11 +4,11 @@ function buildGraph() {
 
     var cy = cytoscape({
 
-        container: document.getElementById('cy'), // container to render in
+        container: document.getElementById('cy'),
 
         elements: graphJson,
 
-        style: [ // the stylesheet for the graph
+        style: [
             {
                 selector: 'node',
                 style: {
@@ -33,8 +33,19 @@ function buildGraph() {
             name: 'cose-bilkent',
             nodeDimensionsIncludeLabels: true,
             idealEdgeLength: 100
-        }
+        },
+
+        userZoomingEnabled: false
 
     });
 
+    cy.on('tap', 'node', function () {
+        try {
+            window.open(this.data('href'));
+        } catch (e) {
+            window.location.href = this.data('href');
+        }
+    });
+
 }
+

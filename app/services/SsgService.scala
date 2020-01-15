@@ -39,24 +39,24 @@ class SsgService @Inject()(gitHubConnector: GitHubConnector)(implicit ec: Execut
 
   def generateServiceGraph(serviceName: String): Future[GraphElements] = {
     def updateGraph(services: List[String], graphElements: Future[GraphElements]): Future[GraphElements] =
-      services.foldLeft(graphElements) { (g, service) =>
+      services.foldLeft(graphElements) { (g, sourceService) =>
         g.flatMap { g =>
-          if (g.nodes.exists(_.data.id == service)) {
+          if (g.nodes.exists(_.data.id == sourceService)) {
             Future.successful(g)
           } else {
-            getValidServices(service).flatMap { validServices =>
-              val graph = validServices.foldLeft(Future.successful(g.addNode(GraphNode(data = GraphNodeData(service))))) { (g, s) =>
+            getValidServices(sourceService).flatMap { targetServices =>
+              val graph = targetServices.foldLeft(Future.successful(g.addNode(sourceService))) { (g, targetService) =>
                 g.map { g =>
-                  if (!g.nodes.exists(_.data.id == service)) {
-                    g.addNode(GraphNode(data = GraphNodeData(id = service)))
-                      .addEdge(GraphEdge(data = GraphEdgeData(id = s"$service->$s", source = service, target = s)))
+                  if (!g.nodes.exists(_.data.id == sourceService)) {
+                    g.addNode(sourceService)
+                      .addEdge(sourceService, targetService)
                   } else {
-                    g.addEdge(GraphEdge(data = GraphEdgeData(id = s"$service->$s", source = service, target = s)))
+                    g.addEdge(sourceService, targetService)
                   }
                 }
               }
 
-              updateGraph(validServices, graph)
+              updateGraph(targetServices, graph)
             }
           }
         }
