@@ -8,7 +8,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class GitHubConnector @Inject()(ws: WSClient, appConfig: AppConfig)(implicit ec: ExecutionContext) {
 
   def getConfigString(serviceName: String): Future[Option[String]] =
-    ws.url(s"https://raw.githubusercontent.com/hmrc/$serviceName/master/conf/application.conf")
+    ws.url(s"https://raw.githubusercontent.com/${appConfig.repoOrgOrUser}/$serviceName/${appConfig.serviceConfigFile}")
       .addHttpHeaders("Authorization" -> s"token ${appConfig.gitHubAccessToken}")
       .get()
       .map(response =>

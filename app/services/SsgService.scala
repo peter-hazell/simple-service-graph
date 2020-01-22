@@ -1,5 +1,6 @@
 package services
 import com.typesafe.config.ConfigFactory
+import config.AppConfig
 import connectors.GitHubConnector
 import javax.inject.Inject
 import models._
@@ -7,7 +8,7 @@ import models._
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
-class SsgService @Inject()(gitHubConnector: GitHubConnector)(implicit ec: ExecutionContext) {
+class SsgService @Inject()(gitHubConnector: GitHubConnector, appConfig: AppConfig)(implicit ec: ExecutionContext) {
 
   private def getConfigString(serviceName: String): Future[Option[String]] = gitHubConnector.getConfigString(serviceName)
 
@@ -37,6 +38,9 @@ class SsgService @Inject()(gitHubConnector: GitHubConnector)(implicit ec: Execut
       case None => Future.successful(List.empty[String])
     }
 
+  def repoUrl(serviceName: String): String =
+    s"https://github.com/${appConfig.repoOrgOrUser}/$serviceName"
+
   def generateServiceGraph(serviceName: String): Future[GraphElements] = {
     def updateGraph(services: List[String], graphElements: Future[GraphElements]): Future[GraphElements] =
       services.foldLeft(graphElements) { (g, sourceService) =>
@@ -45,10 +49,10 @@ class SsgService @Inject()(gitHubConnector: GitHubConnector)(implicit ec: Execut
             Future.successful(g)
           } else {
             getValidServices(sourceService).flatMap { targetServices =>
-              val graph = targetServices.foldLeft(Future.successful(g.addNode(sourceService))) { (g, targetService) =>
+              val graph = targetServices.foldLeft(Future.successful(g.addNode(sourceService, repoUrl(sourceService)))) { (g, targetService) =>
                 g.map { g =>
                   if (!g.nodes.exists(_.data.id == sourceService)) {
-                    g.addNode(sourceService)
+                    g.addNode(sourceService, repoUrl(sourceService))
                       .addEdge(sourceService, targetService)
                   } else {
                     g.addEdge(sourceService, targetService)

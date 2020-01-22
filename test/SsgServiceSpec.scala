@@ -6,10 +6,9 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.ws.WSClient
 import services.SsgService
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.FiniteDuration
-import scala.concurrent.duration._
+import scala.concurrent.duration.{FiniteDuration, _}
+import scala.concurrent.{Await, Future}
 import scala.io.Source
 
 class SsgServiceSpec extends WordSpec with Matchers with MockitoSugar {
@@ -28,16 +27,18 @@ class SsgServiceSpec extends WordSpec with Matchers with MockitoSugar {
     }
   }
 
-  val service = new SsgService(fakeGitHubConnector)
+  val service: SsgService = new SsgService(fakeGitHubConnector, mockAppConfig) {
+    override def repoUrl(serviceName: String): String = s"https://github.com/test/$serviceName"
+  }
 
   "generateServiceGraph" should {
     "generate the correct graph based on a given service" in {
       val expectedGraph = GraphElements(
         nodes = List(
-          GraphNode(GraphNodeData(id = "service-a", href = "https://github.com/hmrc/service-a")),
-          GraphNode(GraphNodeData(id = "service-d", href = "https://github.com/hmrc/service-d")),
-          GraphNode(GraphNodeData(id = "service-b", href = "https://github.com/hmrc/service-b")),
-          GraphNode(GraphNodeData(id = "service-c", href = "https://github.com/hmrc/service-c"))
+          GraphNode(GraphNodeData(id = "service-a", href = s"https://github.com/test/service-a")),
+          GraphNode(GraphNodeData(id = "service-d", href = s"https://github.com/test/service-d")),
+          GraphNode(GraphNodeData(id = "service-b", href = s"https://github.com/test/service-b")),
+          GraphNode(GraphNodeData(id = "service-c", href = s"https://github.com/test/service-c"))
         ),
         edges = List(
           GraphEdge(GraphEdgeData(id = "service-a~service-d", source = "service-a", target = "service-d")),
