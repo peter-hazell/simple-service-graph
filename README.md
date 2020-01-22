@@ -13,7 +13,7 @@ files for statically describing each of it's service interactions.
 - The application config files for your services should contain the pattern in this 
 example to describe the other services that it needs to interact with. E.g. the following would be the config 
 file for `service-a`; which interacts with `service-b`, `service-c` and `service-d`):
-  
+
   ```
   microservice {
     services {
@@ -34,7 +34,7 @@ file for `service-a`; which interacts with `service-b`, `service-c` and `service
     }
   }
   ```
-- In the root of this project, rename the file `local.example.conf` to `local.conf`.
+- Rename the file in the `conf` directory called `local.example.conf` to `local.conf`.
 - Update the values in `local.conf` to the correct ones as per the comments.
 
 ## How to run
