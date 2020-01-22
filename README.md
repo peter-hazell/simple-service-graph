@@ -33,11 +33,11 @@ file for `service-a`; which interacts with `service-b`, `service-c` and `service
       }
     }
   }
-  ```
+  ```   
 - Rename the file in the `conf` directory called `local.example.conf` to `local.conf`.
 - Update the values in `local.conf` to the correct ones as per the comments.
 
 ## How to run
 1. Execute `sbt run`.
-2. Go to [http://localhost:9003/simple-service-graph]()
+2. Go to <http://localhost:9003/simple-service-graph>.
 3. Enter the service name you want to generate a graph for and click the button `Generate service graph`.
